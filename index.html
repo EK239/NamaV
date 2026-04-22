@@ -52,7 +52,7 @@
     .pico{width:40px;height:40px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid var(--bdr)}
     .pi.active .pico{background:rgba(201,168,76,.15);border-color:var(--gold)}
     .pi.next .pico{background:rgba(76,175,138,.15);border-color:var(--grn)}
-    .pn{font-size:16px;font-weight:600}
+    .pn{font-size:17px;font-weight:700;font-family:'Cinzel',serif;letter-spacing:1px}
     .psub{font-size:11px;color:var(--t3);margin-top:1px}
     .pr2{display:flex;align-items:center;gap:10px}
     .pt{font-family:'Cinzel',serif;font-size:20px;font-weight:600}
@@ -334,9 +334,9 @@
 // TRANSLATIONS
 // ═══════════════════════════════════════════════════
 const TR = {
-  de:{p:['İmsak','Fajr','Sonnenaufgang','Dhuhr','Asr','Maghrib','Isha'],tr:['İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Nächstes Gebet',today:'HEUTE',nav:['ZEITEN','QIBLA','MONAT','EINST.'],mo:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],th:['Tag','İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Dunkles Design','Helles Design']},
-  tr:{p:['İmsak','Fajr','Güneş','Öğle','İkindi','Akşam','Yatsı'],tr:['İmsak','Sabah','Güneş Doğuşu','Öğle','İkindi','Akşam','Yatsı'],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Sonraki Namaz',today:'BUGÜN',nav:['VAKİTLER','KIBLE','AY','AYARLAR'],mo:['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],th:['Gün','İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Karanlık','Açık']},
-  en:{p:['Imsak','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],tr:['Imsak','Dawn','Sunrise','Midday','Afternoon','Sunset','Night'],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Next Prayer',today:'TODAY',nav:['TIMES','QIBLA','MONTH','SETTINGS'],mo:['January','February','March','April','May','June','July','August','September','October','November','December'],th:['Day','Imsak','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],theme:['Dark Mode','Light Mode']}
+  de:{p:['İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],tr:['','','','','','',''],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Nächstes Gebet',today:'HEUTE',nav:['ZEITEN','QIBLA','MONAT','EINST.'],mo:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],th:['Tag','İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Dunkles Design','Helles Design']},
+  tr:{p:['İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],tr:['','','','','','',''],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Sonraki Namaz',today:'BUGÜN',nav:['VAKİTLER','KIBLE','AY','AYARLAR'],mo:['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],th:['Gün','İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Karanlık','Açık']},
+  en:{p:['İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],tr:['','','','','','',''],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Next Prayer',today:'TODAY',nav:['TIMES','QIBLA','MONTH','SETTINGS'],mo:['January','February','March','April','May','June','July','August','September','October','November','December'],th:['Day','Imsak','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],theme:['Dark Mode','Light Mode']}
 };
 
 // ═══════════════════════════════════════════════════
@@ -568,7 +568,7 @@ function renderHome(){
     div.innerHTML=`
       <div class="pl">
         <div class="pico">${lang.ico[i]}</div>
-        <div><div class="pn">${lang.p[i]}</div><div class="psub">${lang.tr[i]}</div></div>
+        <div class="pn">${lang.p[i]}</div>
       </div>
       <div class="pr2">
         ${isA?'<span class="badge ba">AKTIV</span>':''}

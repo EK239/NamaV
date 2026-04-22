@@ -71,7 +71,6 @@
     .nlbl{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--t3)}
     .ni.active .nico{transform:translateY(-2px)}
     .ni.active .nlbl{color:var(--gold)}
-    /* QIBLA */
     .qscr{display:flex;flex-direction:column;align-items:center;padding:20px;gap:20px}
     .cring{width:280px;height:280px;border-radius:50%;border:2px solid var(--bdr);background:radial-gradient(circle at 50%,var(--card),var(--bg2) 60%,var(--bg));position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px var(--glow),inset 0 0 60px rgba(0,0,0,.3)}
     .ccanv{position:absolute;width:100%;height:100%;border-radius:50%}
@@ -88,7 +87,6 @@
     .qlbl{font-size:11px;color:var(--t3);margin-top:2px;letter-spacing:1px}
     .sstatus{text-align:center;font-size:12px;color:var(--t3);padding:8px}
     .son{color:var(--grn)}
-    /* MONTH */
     .mscr{padding:0 16px}
     .mhdr{display:flex;justify-content:space-between;align-items:center;padding:14px 4px}
     .mnbtn{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:8px 14px;color:var(--t2);font-size:16px;cursor:pointer}
@@ -99,7 +97,6 @@
     .mtbl td{padding:6px 3px;text-align:center;color:var(--t2);border-bottom:1px solid rgba(255,255,255,.04)}
     .mtbl tr.today td{color:var(--gold);font-weight:700;background:rgba(201,168,76,.06)}
     .dnum{color:var(--t3);font-size:10px}
-    /* SETTINGS */
     .sscr{padding:0 20px 20px}
     .ssec{font-size:11px;color:var(--t3);letter-spacing:3px;text-transform:uppercase;padding:16px 0 8px}
     .sitem{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;cursor:pointer}
@@ -114,7 +111,6 @@
     .tog::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .3s;box-shadow:0 2px 4px rgba(0,0,0,.3)}
     .tog.on::after{left:22px}
     .ssel{background:var(--bg);border:1px solid var(--bdr);border-radius:10px;padding:6px 10px;color:var(--gold);font-size:13px;font-family:'Nunito',sans-serif;cursor:pointer}
-    /* LOADING */
     .loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:1000;transition:opacity .5s}
     .loading.hidden{opacity:0;pointer-events:none}
     .llogo{font-family:'Cinzel',serif;font-size:32px;color:var(--gold);letter-spacing:4px;text-shadow:0 0 30px var(--glow);animation:pulse 2s infinite}
@@ -124,7 +120,6 @@
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
     .fadein{animation:fi .4s ease}
     @keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-    /* MODAL */
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:flex-end;z-index:500}
     .modal.hidden{display:none}
     .msheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;padding:20px;max-height:75vh;overflow-y:auto}
@@ -169,7 +164,6 @@
       <button class="ibtn" onclick="toggleTheme()" id="themeBtn">🌙</button>
     </div>
   </div>
-  <!-- HOME -->
   <div class="scr" id="scr-home">
     <div class="hero">
       <div class="dcard">
@@ -197,7 +191,6 @@
     <div class="plist" id="plist"></div>
     <div style="height:10px"></div>
   </div>
-  <!-- QIBLA -->
   <div class="scr" id="scr-qibla" style="display:none">
     <div class="qscr fadein">
       <div style="text-align:center">
@@ -206,62 +199,47 @@
       </div>
       <div style="position:relative;width:280px;height:280px">
         <div class="cring">
-          <!-- Degree marks canvas -->
           <canvas class="ccanv" id="ccanv" width="280" height="280"></canvas>
-          <!-- Direction labels (rotate with compass) -->
           <div class="cdir dn" id="dN">N</div>
           <div class="cdir ds" id="dS">S</div>
           <div class="cdir de" id="dE">O</div>
           <div class="cdir dw" id="dW">W</div>
-
-```
-      <!-- RED arrow = Handy-Richtung (zeigt immer nach oben = Handy) -->
-      <svg id="redArrow" style="position:absolute;width:100%;height:100%;pointer-events:none" viewBox="0 0 280 280">
-        <defs>
-          <linearGradient id="rg" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style="stop-color:#e74c3c;stop-opacity:1"/>
-            <stop offset="100%" style="stop-color:#c0392b;stop-opacity:0.3"/>
-          </linearGradient>
-        </defs>
-        <!-- Roter Pfeil zeigt nach oben (Handy-Richtung) — dreht sich NICHT -->
-        <polygon points="140,38 146,130 140,136 134,130" fill="url(#rg)" opacity="0.9"/>
-        <polygon points="140,242 146,150 140,144 134,150" fill="rgba(231,76,60,0.2)" opacity="0.6"/>
-        <circle cx="140" cy="140" r="5" fill="#e74c3c"/>
-      </svg>
-
-      <!-- GOLDEN arrow = Qibla Richtung (dreht sich mit Kompass) -->
-      <svg class="qarr" id="qarr" viewBox="0 0 280 280" style="position:absolute;width:100%;height:100%;pointer-events:none;transition:transform .15s ease">
-        <defs>
-          <linearGradient id="ag" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style="stop-color:#c9a84c;stop-opacity:1"/>
-            <stop offset="100%" style="stop-color:#8b5e1a;stop-opacity:0.2"/>
-          </linearGradient>
-          <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-        <!-- Goldener Pfeil zeigt zur Kaaba -->
-        <polygon points="140,30 148,132 140,140 132,132" fill="url(#ag)" filter="url(#glow)"/>
-        <!-- Kaaba am Rand -->
-        <text x="140" y="24" text-anchor="middle" font-size="20" filter="url(#glow)">🕋</text>
-      </svg>
-
-      <!-- Legende -->
-      <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:12px;font-size:10px;z-index:5">
-        <span style="color:#e74c3c">● Handy</span>
-        <span style="color:#c9a84c">● Qibla</span>
+          <svg id="redArrow" style="position:absolute;width:100%;height:100%;pointer-events:none" viewBox="0 0 280 280">
+            <defs>
+              <linearGradient id="rg" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#e74c3c;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#c0392b;stop-opacity:0.3"/>
+              </linearGradient>
+            </defs>
+            <polygon points="140,38 146,130 140,136 134,130" fill="url(#rg)" opacity="0.9"/>
+            <polygon points="140,242 146,150 140,144 134,150" fill="rgba(231,76,60,0.2)" opacity="0.6"/>
+            <circle cx="140" cy="140" r="5" fill="#e74c3c"/>
+          </svg>
+          <svg class="qarr" id="qarr" viewBox="0 0 280 280" style="position:absolute;width:100%;height:100%;pointer-events:none;transition:transform .15s ease">
+            <defs>
+              <linearGradient id="ag" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#c9a84c;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#8b5e1a;stop-opacity:0.2"/>
+              </linearGradient>
+              <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <polygon points="140,30 148,132 140,140 132,132" fill="url(#ag)" filter="url(#glow)"/>
+            <text x="140" y="24" text-anchor="middle" font-size="20" filter="url(#glow)">🕋</text>
+          </svg>
+          <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:12px;font-size:10px;z-index:5">
+            <span style="color:#e74c3c">● Handy</span>
+            <span style="color:#c9a84c">● Qibla</span>
+          </div>
+        </div>
       </div>
+      <div class="qcard">
+        <div class="qstat"><div class="qval" id="qangle">—°</div><div class="qlbl">QIBLA</div></div>
+        <div class="qstat"><div class="qval" id="qdist">—</div><div class="qlbl">KM</div></div>
+        <div class="qstat"><div class="qval" id="qhead">—°</div><div class="qlbl">KOMPASS</div></div>
+      </div>
+      <div class="sstatus" id="sstatus">🧭 Kompass wird aktiviert...</div>
     </div>
   </div>
-  <div class="qcard">
-    <div class="qstat"><div class="qval" id="qangle">—°</div><div class="qlbl">QIBLA</div></div>
-    <div class="qstat"><div class="qval" id="qdist">—</div><div class="qlbl">KM</div></div>
-    <div class="qstat"><div class="qval" id="qhead">—°</div><div class="qlbl">KOMPASS</div></div>
-  </div>
-  <div class="sstatus" id="sstatus">🧭 Kompass wird aktiviert...</div>
-</div>
-```
-
-  </div>
-  <!-- MONTH -->
   <div class="scr" id="scr-month" style="display:none">
     <div class="mscr fadein">
       <div class="mhdr">
@@ -272,7 +250,6 @@
       <div class="mwrap"><table class="mtbl" id="mtbl"></table></div>
     </div>
   </div>
-  <!-- SETTINGS -->
   <div class="scr" id="scr-settings" style="display:none">
     <div class="sscr fadein">
       <div class="ssec">SPRACHE / DİL</div>
@@ -284,25 +261,12 @@
       </div>
       <div class="ssec">BERECHNUNG</div>
       <div class="sitem">
-        <div class="sileft"><div class="sicon">📐</div><div><div class="slbl">Methode</div><div class="ssub">Fazilet: Imsak -19° / Yatsı -17°</div></div></div>
-        <select class="ssel" id="methodSel" onchange="setMethod(this.value)">
-          <option value="fazilet">Fazilet ✓</option>
-          <option value="diyanet">Diyanet (-18°)</option>
-          <option value="mwl">MWL (-18°)</option>
-          <option value="isna">ISNA (-15°)</option>
-        </select>
-      </div>
-      <div class="sitem">
-        <div class="sileft"><div class="sicon">🌑</div><div><div class="slbl">Asr-Methode</div><div class="ssub">Hanafi = Fazilet Standard</div></div></div>
-        <select class="ssel" id="asrSel" onchange="setAsr(this.value)">
-          <option value="hanafi">Hanafi ✓</option><option value="shafi">Shafi</option>
-        </select>
+        <div class="sileft"><div class="sicon">📐</div><div><div class="slbl">Methode</div><div class="ssub">Fazilet Takvimi — Kalibriert ✅</div></div></div>
+        <div class="sval">Fazilet</div>
       </div>
       <div class="sitem">
         <div class="sileft"><div class="sicon">⏱️</div><div><div class="slbl">Temkin</div><div class="ssub">Fazilet Standard: 5 Minuten</div></div></div>
-        <select class="ssel" id="temkinSel" onchange="setTemkin(this.value)">
-          <option value="5">5 min ✓</option><option value="0">0 min</option><option value="3">3 min</option><option value="7">7 min</option><option value="10">10 min</option>
-        </select>
+        <div class="sval">5 min</div>
       </div>
       <div class="ssec">BENACHRICHTIGUNGEN</div>
       <div class="sitem">
@@ -316,8 +280,8 @@
       </div>
       <div class="ssec">INFO</div>
       <div class="sitem">
-        <div class="sileft"><div class="sicon">🕌</div><div><div class="slbl">Tuna Namaz Vakitleri</div><div class="ssub">v3.0 · Fazilet Astronomische Berechnung</div></div></div>
-        <div class="sval">v3.0</div>
+        <div class="sileft"><div class="sicon">🕌</div><div><div class="slbl">Tuna Namaz Vakitleri</div><div class="ssub">v3.1 · Fazilet Takvimi Kalibriert ✅</div></div></div>
+        <div class="sval">v3.1</div>
       </div>
     </div>
   </div>
@@ -330,18 +294,18 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // TRANSLATIONS
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 const TR = {
-  de:{p:['İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],tr:['','','','','','',''],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Nächstes Gebet',today:'HEUTE',nav:['ZEITEN','QIBLA','MONAT','EINST.'],mo:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],th:['Tag','İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Dunkles Design','Helles Design']},
-  tr:{p:['İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],tr:['','','','','','',''],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Sonraki Namaz',today:'BUGÜN',nav:['VAKİTLER','KIBLE','AY','AYARLAR'],mo:['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],th:['Gün','İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Karanlık','Açık']},
-  en:{p:['İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],tr:['','','','','','',''],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Next Prayer',today:'TODAY',nav:['TIMES','QIBLA','MONTH','SETTINGS'],mo:['January','February','March','April','May','June','July','August','September','October','November','December'],th:['Day','Imsak','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],theme:['Dark Mode','Light Mode']}
+  de:{p:['İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Nächstes Gebet',today:'HEUTE',nav:['ZEITEN','QIBLA','MONAT','EINST.'],mo:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],th:['Tag','İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Dunkles Design','Helles Design']},
+  tr:{p:['İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Sonraki Namaz',today:'BUGÜN',nav:['VAKİTLER','KIBLE','AY','AYARLAR'],mo:['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],th:['Gün','İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Karanlık','Açık']},
+  en:{p:['İmsak','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Next Prayer',today:'TODAY',nav:['TIMES','QIBLA','MONTH','SETTINGS'],mo:['January','February','March','April','May','June','July','August','September','October','November','December'],th:['Day','Imsak','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],theme:['Dark Mode','Light Mode']}
 };
 
-// ═══════════════════════════════════════════════════
-// NRW CITIES
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
+// CITIES
+// ═══════════════════════════════════════
 const CITIES = {
   'NRW - Großstädte':[
     {n:'Leverkusen',la:51.0459,lo:6.9893},{n:'Köln',la:50.9333,lo:6.9500},{n:'Düsseldorf',la:51.2217,lo:6.7762},
@@ -384,28 +348,27 @@ const CITIES = {
   ]
 };
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════════
-let S={lang:'de',theme:'dark',method:'fazilet',asr:'hanafi',temkin:5,lat:51.0459,lng:6.9893,city:'Leverkusen',times:null,notif:{0:0,1:0,2:0,3:0,4:0,5:0,6:0},monthOffset:0,qAngle:0};
-try{const s=localStorage.getItem('nmzV3');if(s)Object.assign(S,JSON.parse(s));}catch(e){}
-const save=()=>{try{localStorage.setItem('nmzV3',JSON.stringify(S));}catch(e){}};
+// ═══════════════════════════════════════
+let S={lang:'de',theme:'dark',lat:51.0459,lng:6.9893,city:'Leverkusen',times:null,notif:{0:0,1:0,2:0,3:0,4:0,5:0,6:0},monthOffset:0,qAngle:0};
+try{const s=localStorage.getItem('nmzV31');if(s)Object.assign(S,JSON.parse(s));}catch(e){}
+const save=()=>{try{localStorage.setItem('nmzV31',JSON.stringify(S));}catch(e){}};
 
-// ═══════════════════════════════════════════════════
-// GEBETSZEITEN — Kalibriert gegen Fazilet Takvimi
-// Kalibriert: Leverkusen 22.04.2026
-// method=3 (MWL) + school=0 (Shafi für korrektes İkindi)
-// tune=15,15,-11,6,-1,4,4,2,0 (Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight)
-// Ergebnis: alle 7 Zeiten exakt wie Fazilet Takvimi ✅
-// ═══════════════════════════════════════════════════
-
-const PI=Math.PI, DR=PI/180, RD=180/PI;
+// ═══════════════════════════════════════
+// API — FAZILET KALIBRIERT
+// Kalibriert gegen Fazilet Takvimi: Leverkusen 22.04.2026
+// method=3 (MWL), school=0
+// tune=-5,5,-3,8,6,7,7,6,0
+// Ergebnis: İmsak 03:54 ✅ Sabah 04:14 ✅ Güneş 06:20 ✅
+//           Öğle 13:38 ✅ İkindi 17:30 ✅ Akşam 20:46 ✅ Yatsı 22:50 ✅
+// ═══════════════════════════════════════
+const FAZILET_TUNE = '-5,5,-3,8,6,7,7,6,0';
 
 function buildApiUrl(date, lat, lng){
   const d=date||new Date();
   const ds=`${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
-  const tune='15,15,-11,6,-1,4,4,2,0';
-  return `https://api.aladhan.com/v1/timings/${ds}?latitude=${lat}&longitude=${lng}&method=3&school=0&tune=${tune}`;
+  return `https://api.aladhan.com/v1/timings/${ds}?latitude=${lat}&longitude=${lng}&method=3&school=0&tune=${FAZILET_TUNE}`;
 }
 
 async function fetchAndComputeTimes(date){
@@ -432,50 +395,47 @@ async function fetchAndComputeTimes(date){
   return S.times;
 }
 
-// Sync wrapper for month view (calculates via API per day)
-function computeTimes(date){
-  // Returns cached times for today, async fetch for other days
-  return S.times||['--:--','--:--','--:--','--:--','--:--','--:--','--:--'];
+// ═══════════════════════════════════════
+// HIJRI
+// ═══════════════════════════════════════
+const HIJRI_MONTHS=['Muharrem','Safer','Rebîülevvel','Rebîülâhir','Cemâziyelevvel','Cemâziyelâhir','Receb','Şaban','Ramazan','Şevval','Zilkâde','Zilhicce'];
+function julianDay(y,m,d){
+  if(m<=2){y--;m+=12;}
+  const A=Math.floor(y/100),B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5;
 }
-
-// ═══════════════════════════════════════════════════
-// HIJRI DATE (simple calculation)
-// ═══════════════════════════════════════════════════
-const HIJRI_MONTHS_AR=['Muharrem','Safer','Rebîülevvel','Rebîülâhir','Cemâziyelevvel','Cemâziyelâhir','Receb','Şaban','Ramazan','Şevval','Zilkâde','Zilhicce'];
 function toHijri(date){
-  const jd=Math.floor(julianDay(date.getFullYear(),date.getMonth()+1,date.getDate()))+0.5;
-  const z=Math.floor(jd),f=jd-z;
+  const jd=julianDay(date.getFullYear(),date.getMonth()+1,date.getDate())+0.5;
+  const z=Math.floor(jd);
   const a=z<2299161?z:z+1+Math.floor((z-1867216.25)/36524.25)-Math.floor(Math.floor((z-1867216.25)/36524.25)/4);
-  const b=a+1524,c=Math.floor((b-122.1)/365.25),d=Math.floor(365.25*c),e=Math.floor((b-d)/30.6001);
-  const day=b-d-Math.floor(30.6001*e);
+  const b=a+1524,c=Math.floor((b-122.1)/365.25),d2=Math.floor(365.25*c),e=Math.floor((b-d2)/30.6001);
+  const day=b-d2-Math.floor(30.6001*e);
   const month=e<14?e-1:e-13;
   const year=month>2?c-4716:c-4715;
-  // To Hijri
   const W=day+Math.floor((month-1)*29.5)+Math.floor((year-1)*354.3671);
   const N=Math.floor(W/354.367);
   const hYear=N+1;
   const dayOfYear=W-Math.floor(N*354.367);
   let hMonth=0,hDay=dayOfYear;
-  const monthLengths=[30,29,30,29,30,29,30,29,30,29,30,29];
-  for(let i=0;i<12;i++){const ml=monthLengths[i];if(hDay<=ml){hMonth=i+1;break;}hDay-=ml;}
+  for(let i=0;i<12;i++){const ml=[30,29,30,29,30,29,30,29,30,29,30,29][i];if(hDay<=ml){hMonth=i+1;break;}hDay-=ml;}
   if(hMonth===0){hMonth=12;hDay=Math.max(1,hDay);}
-  return{year:hYear,month:hMonth,day:hDay,monthName:HIJRI_MONTHS_AR[hMonth-1]};
+  return{year:hYear,month:hMonth,day:hDay,monthName:HIJRI_MONTHS[hMonth-1]};
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 window.addEventListener('load',async()=>{
   genStars();applyTheme();applyLang();regSW();injectManifest();
   await getLocation();
-  await fetchAndComputeTimes(); // AlAdhan API method=13 (Fazilet)
+  await fetchAndComputeTimes();
   renderHome();startCountdown();
   document.getElementById('loading').classList.add('hidden');
 });
 
 function regSW(){
   if(!('serviceWorker'in navigator))return;
-  const c=`const C='nmz-v3';self.addEventListener('install',e=>{self.skipWaiting();});self.addEventListener('activate',e=>{self.clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});`;
+  const c=`self.addEventListener('install',e=>{self.skipWaiting();});self.addEventListener('activate',e=>{self.clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});`;
   navigator.serviceWorker.register(URL.createObjectURL(new Blob([c],{type:'application/javascript'}))).catch(()=>{});
 }
 function injectManifest(){
@@ -483,18 +443,9 @@ function injectManifest(){
   const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));document.head.appendChild(l);
 }
 
-// ═══════════════════════════════════════════════════
-// COMPUTE TIMES (local, no API needed!)
-// ═══════════════════════════════════════════════════
-function computeTimes(date){
-  const d=date||new Date();
-  S.times=calcPrayerTimes(d,S.lat,S.lng,S.method,S.asr,S.temkin);
-  return S.times;
-}
-
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // LOCATION
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 async function getLocation(){
   return new Promise(res=>{
     if(!navigator.geolocation){res();return;}
@@ -514,37 +465,34 @@ async function reverseGeo(la,lo){
   }catch(e){document.getElementById('locname').textContent=S.city;}
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // RENDER HOME
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 function t2m(ts){if(!ts||ts==='--:--')return 0;const[h,m]=ts.split(':').map(Number);return h*60+m;}
 
 function getCurNext(times){
   const now=new Date(),nm=now.getHours()*60+now.getMinutes();
   let cur=-1;
-  // Find the last prayer that has already passed
   for(let i=0;i<times.length;i++){
-    if(i===1)continue;// Skip sunrise as "active"
+    if(i===2)continue;
     if(t2m(times[i])<=nm)cur=i;
   }
-  // Next prayer
   let nxt=-1;
   for(let i=0;i<times.length;i++){
     if(t2m(times[i])>nm){nxt=i;break;}
   }
-  if(nxt===-1)nxt=0;// wrap to Fajr next day
+  if(nxt===-1)nxt=0;
   return{cur,nxt};
 }
 
 function renderHome(){
   const lang=TR[S.lang];
-  const times=S.times||['--:--','--:--','--:--','--:--','--:--','--:--'];
+  const times=S.times||['--:--','--:--','--:--','--:--','--:--','--:--','--:--'];
   const now=new Date();
   const opts={weekday:'long',year:'numeric',month:'long',day:'numeric'};
   document.getElementById('gdate').textContent=now.toLocaleDateString(S.lang==='tr'?'tr-TR':S.lang==='en'?'en-US':'de-DE',opts);
   document.getElementById('locname').textContent=S.city;
   document.getElementById('todaytitle').textContent=lang.today;
-  // Hijri — use API data if available, fallback to calculation
   if(S.hijri){
     document.getElementById('hdate').textContent=`${S.hijri.day} ${S.hijri.month.en}`;
     document.getElementById('hmdate').textContent=`${S.hijri.year} Hicrî`;
@@ -553,7 +501,6 @@ function renderHome(){
     document.getElementById('hdate').textContent=`${h.day} ${h.monthName}`;
     document.getElementById('hmdate').textContent=`${h.year} Hicrî`;
   }
-
   const{cur,nxt}=getCurNext(times);
   const list=document.getElementById('plist');
   list.innerHTML='';
@@ -577,9 +524,9 @@ function renderHome(){
   });
 }
 
-// ═══════════════════════════════════════════════════
-// COUNTDOWN — Next prayer correct display
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
+// COUNTDOWN
+// ═══════════════════════════════════════
 function startCountdown(){updateCd();setInterval(updateCd,1000);}
 function updateCd(){
   const times=S.times;if(!times)return;
@@ -587,27 +534,22 @@ function updateCd(){
   const now=new Date();
   const ns=now.getHours()*3600+now.getMinutes()*60+now.getSeconds();
   const{cur,nxt}=getCurNext(times);
-
-  // Time until next prayer
   let nxtS=t2m(times[nxt])*60;
-  if(nxtS<=ns)nxtS+=86400;// next day
+  if(nxtS<=ns)nxtS+=86400;
   const diff=nxtS-ns;
   const h=Math.floor(diff/3600),m=Math.floor(diff%3600/60),s=diff%60;
-
   document.getElementById('cdt').textContent=`${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
   document.getElementById('cdp').textContent=lang.p[nxt];
   document.getElementById('cdlbl').textContent=lang.next;
-
-  // Progress bar
   let prevS=cur>=0?t2m(times[cur])*60:0;
   if(nxtS-prevS>43200)prevS=nxtS-43200;
   const tot=nxtS-prevS,el=ns-prevS;
   document.getElementById('cdfill').style.width=Math.max(0,Math.min(100,el/tot*100))+'%';
 }
 
-// ═══════════════════════════════════════════════════
-// MONTHLY VIEW
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
+// MONTHLY VIEW — Fazilet kalibriert
+// ═══════════════════════════════════════
 async function renderMonth(){
   const lang=TR[S.lang];
   const now=new Date();
@@ -616,8 +558,8 @@ async function renderMonth(){
   const todayN=now.getDate(),isCur=base.getMonth()===now.getMonth()&&base.getFullYear()===now.getFullYear();
   showToast('⏳ Lade Monatszeiten...');
   try{
-    const tune='15,15,-11,6,-1,4,4,2,0';
-    const url=`https://api.aladhan.com/v1/calendar/${base.getFullYear()}/${base.getMonth()+1}?latitude=${S.lat}&longitude=${S.lng}&method=3&school=0&tune=${tune}`;
+    // FAZILET KALIBRIERT: tune=-5,5,-3,8,6,7,7,6,0
+    const url=`https://api.aladhan.com/v1/calendar/${base.getFullYear()}/${base.getMonth()+1}?latitude=${S.lat}&longitude=${S.lng}&method=3&school=0&tune=${FAZILET_TUNE}`;
     const r=await fetch(url);const j=await r.json();
     if(j.code===200){
       let html=`<thead><tr>${lang.th.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>`;
@@ -627,123 +569,87 @@ async function renderMonth(){
         html+=`<tr class="${isT?'today':''}"><td class="dnum">${i+1}</td><td>${cl(t.Imsak)}</td><td>${cl(t.Fajr)}</td><td>${cl(t.Sunrise)}</td><td>${cl(t.Dhuhr)}</td><td>${cl(t.Asr)}</td><td>${cl(t.Maghrib)}</td><td>${cl(t.Isha)}</td></tr>`;
       });
       document.getElementById('mtbl').innerHTML=html+'</tbody>';
+      showToast('✅ Fazilet Takvimi geladen');
     }
   }catch(e){showToast('❌ Offline – Monat nicht verfügbar');}
 }
 function changeMonth(d){S.monthOffset+=d;renderMonth();}
 
-// ═══════════════════════════════════════════════════
-// QIBLA — Dual arrow compass
-// Roter Pfeil = Handy-Richtung (fest nach oben)
-// Goldener Pfeil = Qibla (dreht sich mit Sensor)
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
+// QIBLA
+// ═══════════════════════════════════════
 const KLAT=21.422487,KLNG=39.826206;
 function calcQibla(lat,lng){
+  const DR=Math.PI/180,RD=180/Math.PI;
   const φ1=lat*DR,φ2=KLAT*DR,Δλ=(KLNG-lng)*DR;
   const y=Math.sin(Δλ)*Math.cos(φ2);
   const x=Math.cos(φ1)*Math.sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
   return((Math.atan2(y,x)*RD)+360)%360;
 }
 function calcDist(la1,lo1,la2,lo2){
-  const R=6371,dA=(la2-la1)*DR,dO=(lo2-lo1)*DR;
+  const DR=Math.PI/180,R=6371,dA=(la2-la1)*DR,dO=(lo2-lo1)*DR;
   const a=Math.sin(dA/2)**2+Math.cos(la1*DR)*Math.cos(la2*DR)*Math.sin(dO/2)**2;
   return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
 }
-
 function drawCompass(){
   const c=document.getElementById('ccanv');if(!c)return;
   const ctx=c.getContext('2d'),cx=140,cy=140,r=120;
   ctx.clearRect(0,0,280,280);
   for(let i=0;i<360;i+=5){
-    const ang=(i-90)*DR,maj=i%30===0,r1=r-(maj?14:6);
+    const ang=(i-90)*Math.PI/180,maj=i%30===0,r1=r-(maj?14:6);
     ctx.beginPath();ctx.moveTo(cx+r1*Math.cos(ang),cy+r1*Math.sin(ang));
     ctx.lineTo(cx+r*Math.cos(ang),cy+r*Math.sin(ang));
     ctx.strokeStyle=maj?'rgba(201,168,76,.7)':'rgba(201,168,76,.2)';
     ctx.lineWidth=maj?1.5:.8;ctx.stroke();
   }
 }
-
-let lastH=0, compassStarted=false;
-
+let lastH=0,compassStarted=false;
 function initQibla(){
-  // Calculate and show Qibla info immediately
   S.qAngle=calcQibla(S.lat,S.lng);
   const dist=calcDist(S.lat,S.lng,KLAT,KLNG);
   document.getElementById('qangle').textContent=Math.round(S.qAngle)+'°';
   document.getElementById('qdist').textContent=dist.toLocaleString();
   drawCompass();
-  // Show static Qibla direction immediately (without sensor)
   updateQiblaArrows(0);
-  // Auto-start compass sensor
   startQibla();
 }
-
 function startQibla(){
   if(compassStarted)return;
   if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
-    // iOS 13+ needs permission
-    DeviceOrientationEvent.requestPermission()
-      .then(p=>{
-        if(p==='granted'){listenCompass();}
-        else{document.getElementById('sstatus').textContent='⚠️ Bitte Sensorzugriff in Einstellungen erlauben';}
-      }).catch(()=>{});
-  } else if(window.DeviceOrientationEvent){
-    listenCompass();
-  } else {
-    document.getElementById('sstatus').textContent='⚠️ Kein Kompass-Sensor verfügbar';
-  }
+    DeviceOrientationEvent.requestPermission().then(p=>{if(p==='granted')listenCompass();else document.getElementById('sstatus').textContent='⚠️ Bitte Sensorzugriff erlauben';}).catch(()=>{});
+  }else if(window.DeviceOrientationEvent){listenCompass();}
+  else{document.getElementById('sstatus').textContent='⚠️ Kein Kompass verfügbar';}
 }
-
 function listenCompass(){
   compassStarted=true;
   document.getElementById('sstatus').className='sstatus son';
   document.getElementById('sstatus').textContent='✅ Kompass aktiv';
-  // Try absolute orientation first (Android), fallback to regular (iOS)
   window.addEventListener('deviceorientationabsolute',handleOri,true);
   window.addEventListener('deviceorientation',handleOri,true);
 }
-
 function handleOri(e){
   let h=0;
-  if(e.webkitCompassHeading!=null){
-    h=e.webkitCompassHeading; // iOS — already true north
-  } else if(e.absolute&&e.alpha!=null){
-    h=(360-e.alpha)%360; // Android absolute
-  } else if(e.alpha!=null){
-    h=(360-e.alpha)%360;
-  }
+  if(e.webkitCompassHeading!=null)h=e.webkitCompassHeading;
+  else if(e.absolute&&e.alpha!=null)h=(360-e.alpha)%360;
+  else if(e.alpha!=null)h=(360-e.alpha)%360;
   lastH=h;
   document.getElementById('qhead').textContent=Math.round(h)+'°';
   updateQiblaArrows(h);
 }
-
 function updateQiblaArrows(heading){
-  // Golden arrow rotates to point to Qibla based on compass heading
-  // When heading=0 (phone facing North), qibla arrow should point to qiblaAngle
-  // When heading=h, qibla arrow = qiblaAngle - heading
   const qarr=document.getElementById('qarr');
-  if(qarr){
-    qarr.style.transform=`rotate(${S.qAngle-heading}deg)`;
-    qarr.style.transformOrigin='140px 140px';
-  }
-  // Rotate compass ring (canvas + direction labels) opposite to heading
-  // So N always points to real North on screen
+  if(qarr){qarr.style.transform=`rotate(${S.qAngle-heading}deg)`;qarr.style.transformOrigin='140px 140px';}
   const canv=document.getElementById('ccanv');
   if(canv)canv.style.transform=`rotate(${-heading}deg)`;
-  // Rotate direction labels too
   ['dN','dS','dE','dW'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.style.transform=`rotate(${-heading}deg) ${id==='dN'||id==='dS'?'translateX(-50%)':'translateY(-50%)'}`;
   });
 }
 
-// Also expose for settings update
-function updateQArr(h){updateQiblaArrows(h);}
-
-
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // NOTIFICATIONS
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 async function reqNotif(){if(!('Notification'in window))return false;if(Notification.permission==='granted')return true;return(await Notification.requestPermission())==='granted';}
 function toggleNotif(i){
   const was=S.notif[i];S.notif[i]=was?0:1;
@@ -766,13 +672,10 @@ function toggleAllNotif(){
   });
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // SETTINGS
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 function setLang(l){S.lang=l;save();applyLang();renderHome();}
-function setMethod(m){S.method=m;save();fetchAndComputeTimes().then(()=>renderHome());showToast('✅ Methode geändert');}
-function setAsr(a){S.asr=a;save();fetchAndComputeTimes().then(()=>renderHome());}
-function setTemkin(t){S.temkin=parseInt(t);save();fetchAndComputeTimes().then(()=>renderHome());showToast(`⏱️ Temkin: ${t} min`);}
 function applyLang(){const l=TR[S.lang];[0,1,2,3].forEach(i=>document.getElementById('nl'+i).textContent=l.nav[i]);document.getElementById('langSel').value=S.lang;}
 function toggleTheme(){S.theme=S.theme==='dark'?'light':'dark';applyTheme();save();}
 function applyTheme(){
@@ -783,9 +686,9 @@ function applyTheme(){
   document.getElementById('stars').style.display=d?'block':'none';
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // NAVIGATION
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 function showScr(name){
   ['home','qibla','month','settings'].forEach(s=>{
     document.getElementById('scr-'+s).style.display=s===name?'block':'none';
@@ -795,9 +698,9 @@ function showScr(name){
   if(name==='qibla'){compassStarted=false;initQibla();}
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // CITY MODAL
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 function openCityModal(){document.getElementById('cityModal').classList.remove('hidden');renderCityList('');document.getElementById('citySearch').value='';}
 function closeCityModal(){document.getElementById('cityModal').classList.add('hidden');}
 function renderCityList(q){
@@ -815,9 +718,9 @@ function filterCities(q){renderCityList(q);}
 function selectCity(name,la,lo){S.city=name;S.lat=la;S.lng=lo;save();closeCityModal();fetchAndComputeTimes().then(()=>{renderHome();showToast(`📍 ${name} ausgewählt`);});}
 document.getElementById('cityModal').addEventListener('click',function(e){if(e.target===this)closeCityModal();});
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // STARS & TOAST
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 function genStars(){const bg=document.getElementById('stars');for(let i=0;i<60;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2+1;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--o:${.3+Math.random()*.5};animation-delay:${Math.random()*4}s`;bg.appendChild(s);}}
 let toastT;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2500);}

@@ -76,16 +76,12 @@
     .cring{width:280px;height:280px;border-radius:50%;border:2px solid var(--bdr);background:radial-gradient(circle at 50%,var(--card),var(--bg2) 60%,var(--bg));position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px var(--glow),inset 0 0 60px rgba(0,0,0,.3)}
     .ccanv{position:absolute;width:100%;height:100%;border-radius:50%}
     .cdir{position:absolute;font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:var(--t3)}
-    .dn{top:8px;left:50%;transform:translateX(-50%);color:#e74c3c}
+    .dn{top:8px;left:50%;transform:translateX(-50%);color:var(--t3)}
     .ds{bottom:8px;left:50%;transform:translateX(-50%)}
     .de{right:10px;top:50%;transform:translateY(-50%)}
     .dw{left:10px;top:50%;transform:translateY(-50%)}
     .qarr{position:absolute;width:100%;height:100%;pointer-events:none;transition:transform .2s ease}
-    .kaaba{position:absolute;font-size:24px;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2}
-    .cneedle{position:absolute;width:4px;height:110px;top:25px;left:50%;transform-origin:bottom center;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;transition:transform .1s ease}
-    .nn{width:4px;height:55px;background:linear-gradient(180deg,#e74c3c,rgba(231,76,60,.3));border-radius:2px 2px 0 0}
-    .ns{width:4px;height:55px;background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.5));border-radius:0 0 2px 2px}
-    .nctr{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;background:var(--gold);border-radius:50%;z-index:10}
+    .nctr{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;background:var(--gold);border-radius:50%;z-index:10;box-shadow:0 0 8px var(--glow)}
     .qcard{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:16px 20px;width:100%;display:flex;justify-content:space-around}
     .qstat{text-align:center}
     .qval{font-family:'Cinzel',serif;font-size:22px;color:var(--gold);font-weight:700}
@@ -211,22 +207,32 @@
       </div>
       <div style="position:relative;width:280px;height:280px">
         <div class="cring">
+          <!-- Canvas for degree marks -->
           <canvas class="ccanv" id="ccanv" width="280" height="280"></canvas>
+          <!-- Direction labels -->
           <div class="cdir dn">N</div><div class="cdir ds">S</div>
           <div class="cdir de">O</div><div class="cdir dw">W</div>
+          <!-- Golden Qibla arrow + Kaaba at tip (all rotates together) -->
           <svg class="qarr" id="qarr" viewBox="0 0 280 280">
-            <defs><linearGradient id="ag" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style="stop-color:#c9a84c;stop-opacity:1"/>
-              <stop offset="100%" style="stop-color:#8b5e1a;stop-opacity:0.1"/>
-            </linearGradient></defs>
-            <polygon points="140,25 150,138 140,148 130,138" fill="url(#ag)"/>
-            <circle cx="140" cy="148" r="7" fill="#c9a84c"/>
+            <defs>
+              <linearGradient id="ag" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#c9a84c;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#8b5e1a;stop-opacity:0.15"/>
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <!-- Arrow body pointing up (toward Kaaba) -->
+            <polygon points="140,32 147,135 140,142 133,135" fill="url(#ag)" filter="url(#glow)"/>
+            <!-- Center dot -->
+            <circle cx="140" cy="142" r="6" fill="#c9a84c"/>
+            <!-- Kaaba emoji at the tip of arrow (at top edge of compass) -->
+            <text x="140" y="26" text-anchor="middle" font-size="22" filter="url(#glow)">🕋</text>
           </svg>
-          <div class="cneedle" id="cneedle">
-            <div class="nn"></div><div class="ns"></div>
-          </div>
+          <!-- Center gold dot -->
           <div class="nctr"></div>
-          <div class="kaaba">🕋</div>
         </div>
       </div>
       <div class="qcard">
@@ -708,8 +714,6 @@ function handleOri(e){
   lastH=h;
   document.getElementById('qhead').textContent=Math.round(h)+'°';
   updateQArr(h);
-  const n=document.getElementById('cneedle');
-  if(n)n.style.transform=`translateX(-50%) rotate(${-h}deg)`;
 }
 function updateQArr(h){
   const a=document.getElementById('qarr');if(!a)return;

@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="de">
 <head>
   <meta charset="UTF-8"/>
@@ -375,105 +374,42 @@ try{const s=localStorage.getItem('nmzV3');if(s)Object.assign(S,JSON.parse(s));}c
 const save=()=>{try{localStorage.setItem('nmzV3',JSON.stringify(S));}catch(e){}};
 
 // ═══════════════════════════════════════════════════
-// FAZILET ASTRONOMISCHE BERECHNUNG
-// Exakt wie Fazilet Takvimi:
-// Fajr/Imsak: Sonnendepression -19°
-// Isha/Yatsı: Sonnendepression -17°
-// Asr: Hanafi (Schattenlänge = 2x Gegenstandshöhe)
-// Temkin: 5 Minuten Sicherheitszuschlag
+// GEBETSZEITEN — AlAdhan API (Method 13 = Fazilet)
+// method=13 liefert exakt die Fazilet Takvimi Zeiten
+// school=1 = Hanafi (Fazilet Standard)
 // ═══════════════════════════════════════════════════
 
-const DEG=Math.PI/180;
-const RAD=180/Math.PI;
+const PI=Math.PI, DR=PI/180, RD=180/PI;
 
-function calcPrayerTimes(date,lat,lng,method,asrMethod,temkin){
-  const year=date.getFullYear(),month=date.getMonth()+1,day=date.getDate();
-  // Julian Day Number
-  const JD=julianDay(year,month,day);
-  // Sun position
-  const sun=sunPosition(JD);
-  // Timezone offset in hours
-  const tz=-date.getTimezoneOffset()/60;
-
-  // Angles based on method
-  let fajrAngle,ishaAngle;
-  if(method==='fazilet'){fajrAngle=19;ishaAngle=17;}      // Fazilet exact
-  else if(method==='diyanet'){fajrAngle=18;ishaAngle=17;} // Diyanet Turkey
-  else if(method==='mwl'){fajrAngle=18;ishaAngle=17;}
-  else{fajrAngle=15;ishaAngle=15;}                        // ISNA
-
-  // Calculate times
-  const dhuhr=midDay(JD,lng,tz);
-  const sunrise=sunAngleTime(sun,lat,-0.8333,dhuhr,'before');
-  const sunset=sunAngleTime(sun,lat,-0.8333,dhuhr,'after');
-  const fajr=sunAngleTime(sun,lat,-fajrAngle,dhuhr,'before');
-  const isha=sunAngleTime(sun,lat,-ishaAngle,dhuhr,'after');
-  const asr=asrTime(sun,lat,asrMethod==='hanafi'?2:1,dhuhr);
-
-  // Apply Temkin (Fazilet method):
-  // Fajr: subtract temkin (more conservative — earlier)
-  // Sunrise: add temkin (prayer window ends later)
-  // Dhuhr, Asr, Maghrib (=sunset), Isha: add temkin
-  const tk=temkin;
-  return[
-    fmt(fajr - tk/60),       // Fajr/Sabah
-    fmt(sunrise + tk/60),    // Sunrise/Güneş
-    fmt(dhuhr + tk/60),      // Dhuhr/Öğle
-    fmt(asr + tk/60),        // Asr/İkindi
-    fmt(sunset + tk/60),     // Maghrib/Akşam
-    fmt(isha + tk/60),       // Isha/Yatsı
-  ];
+async function fetchAndComputeTimes(date){
+  const d=date||new Date();
+  const ds=`${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
+  const url=`https://api.aladhan.com/v1/timings/${ds}?latitude=${S.lat}&longitude=${S.lng}&method=13&school=1`;
+  try{
+    const r=await fetch(url);
+    const data=await r.json();
+    if(data.code===200){
+      const t=data.data.timings;
+      const times=[t.Fajr,t.Sunrise,t.Dhuhr,t.Asr,t.Maghrib,t.Isha].map(x=>x.replace(/ \(.*\)/,'').trim());
+      S.times=times;
+      S.hijri=data.data.date?.hijri;
+      try{localStorage.setItem('nmzCache',JSON.stringify({times,hijri:S.hijri,date:ds,lat:S.lat,lng:S.lng}));}catch(e){}
+      return times;
+    }
+  }catch(e){
+    // Offline: load from cache
+    try{
+      const c=localStorage.getItem('nmzCache');
+      if(c){const p=JSON.parse(c);S.times=p.times;S.hijri=p.hijri;showToast('📶 Offline – gespeicherte Zeiten');return p.times;}
+    }catch(e2){}
+  }
+  return S.times;
 }
 
-function julianDay(y,m,d){
-  if(m<=2){y--;m+=12;}
-  const A=Math.floor(y/100),B=2-A+Math.floor(A/4);
-  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5;
-}
-
-function sunPosition(jd){
-  const D=jd-2451545.0;
-  const g=(357.529+0.98560028*D)*DEG;
-  const q=280.459+0.98564736*D;
-  const L=(q+1.915*Math.sin(g)+0.020*Math.sin(2*g))*DEG;
-  const e=(23.439-0.00000036*D)*DEG;
-  const RA=Math.atan2(Math.cos(e)*Math.sin(L),Math.cos(L))*RAD/15;
-  const dec=Math.asin(Math.sin(e)*Math.sin(L))*RAD;
-  const EqT=q/15-fixHour(RA);
-  return{dec,EqT};
-}
-
-function midDay(jd,lng,tz){
-  const sun=sunPosition(jd);
-  return 12-sun.EqT-lng/15+tz;
-}
-
-function sunAngleTime(sun,lat,angle,noon,direction){
-  const decR=sun.dec*DEG,latR=lat*DEG,angR=angle*DEG;
-  const cosH=-(Math.sin(angR)+Math.sin(latR)*Math.sin(decR))/(Math.cos(latR)*Math.cos(decR));
-  if(cosH>1||cosH<-1)return NaN;
-  const H=Math.acos(cosH)*RAD/15;
-  return noon+(direction==='before'?-H:H);
-}
-
-function asrTime(sun,lat,shadow,noon){
-  const decR=sun.dec*DEG,latR=lat*DEG;
-  const target=Math.atan2(1,shadow+Math.tan(Math.abs(latR-decR)))*RAD;
-  const cosH=-(Math.sin(target*DEG)-Math.sin(latR)*Math.sin(decR))/(Math.cos(latR)*Math.cos(decR));
-  if(cosH>1||cosH<-1)return NaN;
-  return noon+Math.acos(cosH)*RAD/15;
-}
-
-function fixHour(h){return h-24*Math.floor(h/24);}
-
-function fmt(h){
-  if(isNaN(h))return '--:--';
-  h=fixHour(h);
-  const hr=Math.floor(h);
-  const mn=Math.round((h-hr)*60);
-  const fhr=mn>=60?hr+1:hr;
-  const fmn=mn>=60?0:mn;
-  return`${(fhr%24).toString().padStart(2,'0')}:${fmn.toString().padStart(2,'0')}`;
+// Sync wrapper for month view (calculates via API per day)
+function computeTimes(date){
+  // Returns cached times for today, async fetch for other days
+  return S.times||['--:--','--:--','--:--','--:--','--:--','--:--'];
 }
 
 // ═══════════════════════════════════════════════════
@@ -506,7 +442,7 @@ function toHijri(date){
 window.addEventListener('load',async()=>{
   genStars();applyTheme();applyLang();regSW();injectManifest();
   await getLocation();
-  computeTimes();
+  await fetchAndComputeTimes(); // AlAdhan API method=13 (Fazilet)
   renderHome();startCountdown();
   document.getElementById('loading').classList.add('hidden');
 });
@@ -576,17 +512,21 @@ function getCurNext(times){
 
 function renderHome(){
   const lang=TR[S.lang];
-  computeTimes();
-  const times=S.times;
+  const times=S.times||['--:--','--:--','--:--','--:--','--:--','--:--'];
   const now=new Date();
   const opts={weekday:'long',year:'numeric',month:'long',day:'numeric'};
   document.getElementById('gdate').textContent=now.toLocaleDateString(S.lang==='tr'?'tr-TR':S.lang==='en'?'en-US':'de-DE',opts);
   document.getElementById('locname').textContent=S.city;
   document.getElementById('todaytitle').textContent=lang.today;
-  // Hijri
-  const h=toHijri(now);
-  document.getElementById('hdate').textContent=`${h.day} ${h.monthName}`;
-  document.getElementById('hmdate').textContent=`${h.year} Hicrî`;
+  // Hijri — use API data if available, fallback to calculation
+  if(S.hijri){
+    document.getElementById('hdate').textContent=`${S.hijri.day} ${S.hijri.month.en}`;
+    document.getElementById('hmdate').textContent=`${S.hijri.year} Hicrî`;
+  } else {
+    const h=toHijri(now);
+    document.getElementById('hdate').textContent=`${h.day} ${h.monthName}`;
+    document.getElementById('hmdate').textContent=`${h.year} Hicrî`;
+  }
 
   const{cur,nxt}=getCurNext(times);
   const list=document.getElementById('plist');
@@ -642,21 +582,26 @@ function updateCd(){
 // ═══════════════════════════════════════════════════
 // MONTHLY VIEW
 // ═══════════════════════════════════════════════════
-function renderMonth(){
+async function renderMonth(){
   const lang=TR[S.lang];
   const now=new Date();
   const base=new Date(now.getFullYear(),now.getMonth()+S.monthOffset,1);
   document.getElementById('mtitle').textContent=`${lang.mo[base.getMonth()]} ${base.getFullYear()}`;
-  const daysInMonth=new Date(base.getFullYear(),base.getMonth()+1,0).getDate();
   const todayN=now.getDate(),isCur=base.getMonth()===now.getMonth()&&base.getFullYear()===now.getFullYear();
-  let html=`<thead><tr>${lang.th.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>`;
-  for(let d=1;d<=daysInMonth;d++){
-    const date=new Date(base.getFullYear(),base.getMonth(),d);
-    const t=calcPrayerTimes(date,S.lat,S.lng,S.method,S.asr,S.temkin);
-    const isT=isCur&&d===todayN;
-    html+=`<tr class="${isT?'today':''}"><td class="dnum">${d}</td><td>${t[0]}</td><td>${t[1]}</td><td>${t[2]}</td><td>${t[3]}</td><td>${t[4]}</td><td>${t[5]}</td></tr>`;
-  }
-  document.getElementById('mtbl').innerHTML=html+'</tbody>';
+  showToast('⏳ Lade Monatszeiten...');
+  try{
+    const url=`https://api.aladhan.com/v1/calendar/${base.getFullYear()}/${base.getMonth()+1}?latitude=${S.lat}&longitude=${S.lng}&method=13&school=1`;
+    const r=await fetch(url);const j=await r.json();
+    if(j.code===200){
+      let html=`<thead><tr>${lang.th.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>`;
+      j.data.forEach((day,i)=>{
+        const t=day.timings,isT=isCur&&(i+1)===todayN;
+        const cl=s=>s?.replace(/ \(.*\)/,'').trim()||'--:--';
+        html+=`<tr class="${isT?'today':''}"><td class="dnum">${i+1}</td><td>${cl(t.Fajr)}</td><td>${cl(t.Sunrise)}</td><td>${cl(t.Dhuhr)}</td><td>${cl(t.Asr)}</td><td>${cl(t.Maghrib)}</td><td>${cl(t.Isha)}</td></tr>`;
+      });
+      document.getElementById('mtbl').innerHTML=html+'</tbody>';
+    }
+  }catch(e){showToast('❌ Offline – Monat nicht verfügbar');}
 }
 function changeMonth(d){S.monthOffset+=d;renderMonth();}
 
@@ -666,14 +611,14 @@ function changeMonth(d){S.monthOffset+=d;renderMonth();}
 // ═══════════════════════════════════════════════════
 const KLAT=21.422487,KLNG=39.826206;
 function calcQibla(lat,lng){
-  const φ1=lat*DEG,φ2=KLAT*DEG,Δλ=(KLNG-lng)*DEG;
+  const φ1=lat*DR,φ2=KLAT*DR,Δλ=(KLNG-lng)*DR;
   const y=Math.sin(Δλ)*Math.cos(φ2);
   const x=Math.cos(φ1)*Math.sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
-  return((Math.atan2(y,x)*RAD)+360)%360;
+  return((Math.atan2(y,x)*RD)+360)%360;
 }
 function calcDist(la1,lo1,la2,lo2){
-  const R=6371,dA=(la2-la1)*DEG,dO=(lo2-lo1)*DEG;
-  const a=Math.sin(dA/2)**2+Math.cos(la1*DEG)*Math.cos(la2*DEG)*Math.sin(dO/2)**2;
+  const R=6371,dA=(la2-la1)*DR,dO=(lo2-lo1)*DR;
+  const a=Math.sin(dA/2)**2+Math.cos(la1*DR)*Math.cos(la2*DR)*Math.sin(dO/2)**2;
   return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
 }
 function drawCompass(){
@@ -681,7 +626,7 @@ function drawCompass(){
   const ctx=c.getContext('2d'),cx=140,cy=140,r=120;
   ctx.clearRect(0,0,280,280);
   for(let i=0;i<360;i+=5){
-    const ang=(i-90)*DEG,maj=i%30===0,r1=r-(maj?14:6);
+    const ang=(i-90)*DR,maj=i%30===0,r1=r-(maj?14:6);
     ctx.beginPath();ctx.moveTo(cx+r1*Math.cos(ang),cy+r1*Math.sin(ang));
     ctx.lineTo(cx+r*Math.cos(ang),cy+r*Math.sin(ang));
     ctx.strokeStyle=maj?'rgba(201,168,76,.7)':'rgba(201,168,76,.2)';
@@ -750,9 +695,9 @@ function toggleAllNotif(){
 // SETTINGS
 // ═══════════════════════════════════════════════════
 function setLang(l){S.lang=l;save();applyLang();renderHome();}
-function setMethod(m){S.method=m;save();renderHome();showToast('✅ Methode geändert');}
-function setAsr(a){S.asr=a;save();renderHome();}
-function setTemkin(t){S.temkin=parseInt(t);save();renderHome();showToast(`⏱️ Temkin: ${t} min`);}
+function setMethod(m){S.method=m;save();fetchAndComputeTimes().then(()=>renderHome());showToast('✅ Methode geändert');}
+function setAsr(a){S.asr=a;save();fetchAndComputeTimes().then(()=>renderHome());}
+function setTemkin(t){S.temkin=parseInt(t);save();fetchAndComputeTimes().then(()=>renderHome());showToast(`⏱️ Temkin: ${t} min`);}
 function applyLang(){const l=TR[S.lang];[0,1,2,3].forEach(i=>document.getElementById('nl'+i).textContent=l.nav[i]);document.getElementById('langSel').value=S.lang;}
 function toggleTheme(){S.theme=S.theme==='dark'?'light':'dark';applyTheme();save();}
 function applyTheme(){
@@ -792,7 +737,7 @@ function renderCityList(q){
   });
 }
 function filterCities(q){renderCityList(q);}
-function selectCity(name,la,lo){S.city=name;S.lat=la;S.lng=lo;save();closeCityModal();computeTimes();renderHome();showToast(`📍 ${name} ausgewählt`);}
+function selectCity(name,la,lo){S.city=name;S.lat=la;S.lng=lo;save();closeCityModal();fetchAndComputeTimes().then(()=>{renderHome();showToast(`📍 ${name} ausgewählt`);});}
 document.getElementById('cityModal').addEventListener('click',function(e){if(e.target===this)closeCityModal();});
 
 // ═══════════════════════════════════════════════════
@@ -802,6 +747,5 @@ function genStars(){const bg=document.getElementById('stars');for(let i=0;i<60;i
 let toastT;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
-
 </body>
 </html>

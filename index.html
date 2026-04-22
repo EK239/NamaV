@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="de">
 <head>
   <meta charset="UTF-8"/>
@@ -192,7 +193,7 @@
         </div>
       </div>
     </div>
-    <div class="fnote">🕌 Fazilet Takvimi · Imsak -19° · Yatsı -17° · Temkin 5 dk · Hanafi</div>
+    <div class="fnote">🕌 Fazilet Takvimi · Fajr -19° · Yatsı -17° · Temkin ±5 dk · Hanafi</div>
     <div class="stitle" id="todaytitle">HEUTE</div>
     <div class="plist" id="plist"></div>
     <div style="height:10px"></div>
@@ -374,17 +375,29 @@ try{const s=localStorage.getItem('nmzV3');if(s)Object.assign(S,JSON.parse(s));}c
 const save=()=>{try{localStorage.setItem('nmzV3',JSON.stringify(S));}catch(e){}};
 
 // ═══════════════════════════════════════════════════
-// GEBETSZEITEN — AlAdhan API (Method 13 = Fazilet)
-// method=13 liefert exakt die Fazilet Takvimi Zeiten
+// GEBETSZEITEN — AlAdhan API mit Fazilet Einstellungen
+// method=99 = Custom: Fajr 19°, Isha 17° (Fazilet Winkel)
 // school=1 = Hanafi (Fazilet Standard)
+// tune=-5,5,5,5,5,5,5,5,0 = Temkin 5 Minuten
+// Tune-Reihenfolge: Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight
 // ═══════════════════════════════════════════════════
 
 const PI=Math.PI, DR=PI/180, RD=180/PI;
 
+function buildApiUrl(date, lat, lng){
+  const d=date||new Date();
+  const ds=`${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
+  // method=99: eigene Winkel, Fajr=19°, Isha=17° (exakt Fazilet)
+  // tune: Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight
+  // Fazilet Temkin: Fajr -5min (früher), alle anderen +5min (später)
+  const tune='-5,5,5,5,5,5,5,5,0';
+  return `https://api.aladhan.com/v1/timings/${ds}?latitude=${lat}&longitude=${lng}&method=99&methodSettings=19,null,17&school=1&tune=${tune}&latitudeAdjustmentMethod=3`;
+}
+
 async function fetchAndComputeTimes(date){
   const d=date||new Date();
   const ds=`${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
-  const url=`https://api.aladhan.com/v1/timings/${ds}?latitude=${S.lat}&longitude=${S.lng}&method=13&school=1`;
+  const url=buildApiUrl(d,S.lat,S.lng);
   try{
     const r=await fetch(url);
     const data=await r.json();
@@ -397,7 +410,6 @@ async function fetchAndComputeTimes(date){
       return times;
     }
   }catch(e){
-    // Offline: load from cache
     try{
       const c=localStorage.getItem('nmzCache');
       if(c){const p=JSON.parse(c);S.times=p.times;S.hijri=p.hijri;showToast('📶 Offline – gespeicherte Zeiten');return p.times;}
@@ -590,7 +602,8 @@ async function renderMonth(){
   const todayN=now.getDate(),isCur=base.getMonth()===now.getMonth()&&base.getFullYear()===now.getFullYear();
   showToast('⏳ Lade Monatszeiten...');
   try{
-    const url=`https://api.aladhan.com/v1/calendar/${base.getFullYear()}/${base.getMonth()+1}?latitude=${S.lat}&longitude=${S.lng}&method=13&school=1`;
+    const tune='-5,5,5,5,5,5,5,5,0';
+    const url=`https://api.aladhan.com/v1/calendar/${base.getFullYear()}/${base.getMonth()+1}?latitude=${S.lat}&longitude=${S.lng}&method=99&methodSettings=19,null,17&school=1&tune=${tune}&latitudeAdjustmentMethod=3`;
     const r=await fetch(url);const j=await r.json();
     if(j.code===200){
       let html=`<thead><tr>${lang.th.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>`;
@@ -747,5 +760,6 @@ function genStars(){const bg=document.getElementById('stars');for(let i=0;i<60;i
 let toastT;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
+
 </body>
 </html>

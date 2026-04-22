@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#0a1628"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="Namaz"/>
-  <title>Namaz Vakitleri</title>
+  <meta name="apple-mobile-web-app-title" content="Tuna Namaz"/>
+  <title>Tuna Namaz Vakitleri</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
@@ -145,7 +145,7 @@
 </head>
 <body>
 <div id="loading" class="loading">
-  <div class="llogo">☾ NAMAZ</div>
+  <div class="llogo">☾ TUNA</div>
   <div class="lsub">VAKİTLERİ</div>
   <div class="lspin"></div>
 </div>
@@ -161,7 +161,7 @@
 <div id="app">
   <div class="hdr">
     <div>
-      <div class="htitle">☾ NAMAZ</div>
+      <div class="htitle">☾ TUNA</div>
       <div class="hsub" id="hsub">Gebetszeiten</div>
     </div>
     <div class="hright">
@@ -193,7 +193,6 @@
         </div>
       </div>
     </div>
-    <div class="fnote">🕌 Fazilet Takvimi · Fajr -19° · Yatsı -17° · Temkin ±5 dk · Hanafi</div>
     <div class="stitle" id="todaytitle">HEUTE</div>
     <div class="plist" id="plist"></div>
     <div style="height:10px"></div>
@@ -207,42 +206,60 @@
       </div>
       <div style="position:relative;width:280px;height:280px">
         <div class="cring">
-          <!-- Canvas for degree marks -->
+          <!-- Degree marks canvas -->
           <canvas class="ccanv" id="ccanv" width="280" height="280"></canvas>
-          <!-- Direction labels -->
-          <div class="cdir dn">N</div><div class="cdir ds">S</div>
-          <div class="cdir de">O</div><div class="cdir dw">W</div>
-          <!-- Golden Qibla arrow + Kaaba at tip (all rotates together) -->
-          <svg class="qarr" id="qarr" viewBox="0 0 280 280">
-            <defs>
-              <linearGradient id="ag" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:#c9a84c;stop-opacity:1"/>
-                <stop offset="100%" style="stop-color:#8b5e1a;stop-opacity:0.15"/>
-              </linearGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-            <!-- Arrow body pointing up (toward Kaaba) -->
-            <polygon points="140,32 147,135 140,142 133,135" fill="url(#ag)" filter="url(#glow)"/>
-            <!-- Center dot -->
-            <circle cx="140" cy="142" r="6" fill="#c9a84c"/>
-            <!-- Kaaba emoji at the tip of arrow (at top edge of compass) -->
-            <text x="140" y="26" text-anchor="middle" font-size="22" filter="url(#glow)">🕋</text>
-          </svg>
-          <!-- Center gold dot -->
-          <div class="nctr"></div>
-        </div>
+          <!-- Direction labels (rotate with compass) -->
+          <div class="cdir dn" id="dN">N</div>
+          <div class="cdir ds" id="dS">S</div>
+          <div class="cdir de" id="dE">O</div>
+          <div class="cdir dw" id="dW">W</div>
+
+```
+      <!-- RED arrow = Handy-Richtung (zeigt immer nach oben = Handy) -->
+      <svg id="redArrow" style="position:absolute;width:100%;height:100%;pointer-events:none" viewBox="0 0 280 280">
+        <defs>
+          <linearGradient id="rg" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#e74c3c;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#c0392b;stop-opacity:0.3"/>
+          </linearGradient>
+        </defs>
+        <!-- Roter Pfeil zeigt nach oben (Handy-Richtung) — dreht sich NICHT -->
+        <polygon points="140,38 146,130 140,136 134,130" fill="url(#rg)" opacity="0.9"/>
+        <polygon points="140,242 146,150 140,144 134,150" fill="rgba(231,76,60,0.2)" opacity="0.6"/>
+        <circle cx="140" cy="140" r="5" fill="#e74c3c"/>
+      </svg>
+
+      <!-- GOLDEN arrow = Qibla Richtung (dreht sich mit Kompass) -->
+      <svg class="qarr" id="qarr" viewBox="0 0 280 280" style="position:absolute;width:100%;height:100%;pointer-events:none;transition:transform .15s ease">
+        <defs>
+          <linearGradient id="ag" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#c9a84c;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#8b5e1a;stop-opacity:0.2"/>
+          </linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- Goldener Pfeil zeigt zur Kaaba -->
+        <polygon points="140,30 148,132 140,140 132,132" fill="url(#ag)" filter="url(#glow)"/>
+        <!-- Kaaba am Rand -->
+        <text x="140" y="24" text-anchor="middle" font-size="20" filter="url(#glow)">🕋</text>
+      </svg>
+
+      <!-- Legende -->
+      <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:12px;font-size:10px;z-index:5">
+        <span style="color:#e74c3c">● Handy</span>
+        <span style="color:#c9a84c">● Qibla</span>
       </div>
-      <div class="qcard">
-        <div class="qstat"><div class="qval" id="qangle">—°</div><div class="qlbl">QIBLA</div></div>
-        <div class="qstat"><div class="qval" id="qdist">—</div><div class="qlbl">KM</div></div>
-        <div class="qstat"><div class="qval" id="qhead">—°</div><div class="qlbl">KOMPASS</div></div>
-      </div>
-      <div class="sstatus" id="sstatus">Tippe auf aktivieren</div>
-      <button class="ibtn" onclick="startQibla()" style="padding:12px 24px;font-size:14px">🧭 Kompass aktivieren</button>
     </div>
+  </div>
+  <div class="qcard">
+    <div class="qstat"><div class="qval" id="qangle">—°</div><div class="qlbl">QIBLA</div></div>
+    <div class="qstat"><div class="qval" id="qdist">—</div><div class="qlbl">KM</div></div>
+    <div class="qstat"><div class="qval" id="qhead">—°</div><div class="qlbl">KOMPASS</div></div>
+  </div>
+  <div class="sstatus" id="sstatus">🧭 Kompass wird aktiviert...</div>
+</div>
+```
+
   </div>
   <!-- MONTH -->
   <div class="scr" id="scr-month" style="display:none">
@@ -299,7 +316,7 @@
       </div>
       <div class="ssec">INFO</div>
       <div class="sitem">
-        <div class="sileft"><div class="sicon">🕌</div><div><div class="slbl">Namaz Vakitleri PWA</div><div class="ssub">v3.0 · Fazilet Astronomische Berechnung</div></div></div>
+        <div class="sileft"><div class="sicon">🕌</div><div><div class="slbl">Tuna Namaz Vakitleri</div><div class="ssub">v3.0 · Fazilet Astronomische Berechnung</div></div></div>
         <div class="sval">v3.0</div>
       </div>
     </div>
@@ -317,9 +334,9 @@
 // TRANSLATIONS
 // ═══════════════════════════════════════════════════
 const TR = {
-  de:{p:['Fajr','Sonnenaufgang','Dhuhr','Asr','Maghrib','Isha'],tr:['Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],ico:['🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Nächstes Gebet',today:'HEUTE',nav:['ZEITEN','QIBLA','MONAT','EINST.'],mo:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],th:['Tag','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Dunkles Design','Helles Design']},
-  tr:{p:['Fajr','Güneş','Öğle','İkindi','Akşam','Yatsı'],tr:['Sabah','Güneş Doğuşu','Öğle','İkindi','Akşam','Yatsı'],ico:['🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Sonraki Namaz',today:'BUGÜN',nav:['VAKİTLER','KIBLE','AY','AYARLAR'],mo:['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],th:['Gün','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Karanlık','Açık']},
-  en:{p:['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],tr:['Dawn','Sunrise','Midday','Afternoon','Sunset','Night'],ico:['🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Next Prayer',today:'TODAY',nav:['TIMES','QIBLA','MONTH','SETTINGS'],mo:['January','February','March','April','May','June','July','August','September','October','November','December'],th:['Day','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],theme:['Dark Mode','Light Mode']}
+  de:{p:['İmsak','Fajr','Sonnenaufgang','Dhuhr','Asr','Maghrib','Isha'],tr:['İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Nächstes Gebet',today:'HEUTE',nav:['ZEITEN','QIBLA','MONAT','EINST.'],mo:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],th:['Tag','İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Dunkles Design','Helles Design']},
+  tr:{p:['İmsak','Fajr','Güneş','Öğle','İkindi','Akşam','Yatsı'],tr:['İmsak','Sabah','Güneş Doğuşu','Öğle','İkindi','Akşam','Yatsı'],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Sonraki Namaz',today:'BUGÜN',nav:['VAKİTLER','KIBLE','AY','AYARLAR'],mo:['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],th:['Gün','İmsak','Sabah','Güneş','Öğle','İkindi','Akşam','Yatsı'],theme:['Karanlık','Açık']},
+  en:{p:['Imsak','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],tr:['Imsak','Dawn','Sunrise','Midday','Afternoon','Sunset','Night'],ico:['⭐','🌙','🌅','☀️','🌤️','🌇','🌃'],next:'Next Prayer',today:'TODAY',nav:['TIMES','QIBLA','MONTH','SETTINGS'],mo:['January','February','March','April','May','June','July','August','September','October','November','December'],th:['Day','Imsak','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],theme:['Dark Mode','Light Mode']}
 };
 
 // ═══════════════════════════════════════════════════
@@ -370,7 +387,7 @@ const CITIES = {
 // ═══════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════
-let S={lang:'de',theme:'dark',method:'fazilet',asr:'hanafi',temkin:5,lat:51.0459,lng:6.9893,city:'Leverkusen',times:null,notif:{0:0,1:0,2:0,3:0,4:0,5:0},monthOffset:0,qAngle:0};
+let S={lang:'de',theme:'dark',method:'fazilet',asr:'hanafi',temkin:5,lat:51.0459,lng:6.9893,city:'Leverkusen',times:null,notif:{0:0,1:0,2:0,3:0,4:0,5:0,6:0},monthOffset:0,qAngle:0};
 try{const s=localStorage.getItem('nmzV3');if(s)Object.assign(S,JSON.parse(s));}catch(e){}
 const save=()=>{try{localStorage.setItem('nmzV3',JSON.stringify(S));}catch(e){}};
 
@@ -403,7 +420,7 @@ async function fetchAndComputeTimes(date){
     const data=await r.json();
     if(data.code===200){
       const t=data.data.timings;
-      const times=[t.Fajr,t.Sunrise,t.Dhuhr,t.Asr,t.Maghrib,t.Isha].map(x=>x.replace(/ \(.*\)/,'').trim());
+      const times=[t.Imsak,t.Fajr,t.Sunrise,t.Dhuhr,t.Asr,t.Maghrib,t.Isha].map(x=>x.replace(/ \(.*\)/,'').trim());
       S.times=times;
       S.hijri=data.data.date?.hijri;
       try{localStorage.setItem('nmzCache',JSON.stringify({times,hijri:S.hijri,date:ds,lat:S.lat,lng:S.lng}));}catch(e){}
@@ -421,7 +438,7 @@ async function fetchAndComputeTimes(date){
 // Sync wrapper for month view (calculates via API per day)
 function computeTimes(date){
   // Returns cached times for today, async fetch for other days
-  return S.times||['--:--','--:--','--:--','--:--','--:--','--:--'];
+  return S.times||['--:--','--:--','--:--','--:--','--:--','--:--','--:--'];
 }
 
 // ═══════════════════════════════════════════════════
@@ -465,7 +482,7 @@ function regSW(){
   navigator.serviceWorker.register(URL.createObjectURL(new Blob([c],{type:'application/javascript'}))).catch(()=>{});
 }
 function injectManifest(){
-  const m={name:'Namaz Vakitleri',short_name:'Namaz',start_url:location.href,display:'standalone',background_color:'#0a1628',theme_color:'#0a1628',orientation:'portrait',icons:[{src:'https://ek239.github.io/NamaV/IMG_1344.png',sizes:'192x192',type:'image/png'}]};
+  const m={name:'Tuna Namaz Vakitleri',short_name:'Tuna',start_url:location.href,display:'standalone',background_color:'#0a1628',theme_color:'#0a1628',orientation:'portrait',icons:[{src:'https://ek239.github.io/NamaV/IMG_1344.png',sizes:'192x192',type:'image/png'}]};
   const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));document.head.appendChild(l);
 }
 
@@ -610,7 +627,7 @@ async function renderMonth(){
       j.data.forEach((day,i)=>{
         const t=day.timings,isT=isCur&&(i+1)===todayN;
         const cl=s=>s?.replace(/ \(.*\)/,'').trim()||'--:--';
-        html+=`<tr class="${isT?'today':''}"><td class="dnum">${i+1}</td><td>${cl(t.Fajr)}</td><td>${cl(t.Sunrise)}</td><td>${cl(t.Dhuhr)}</td><td>${cl(t.Asr)}</td><td>${cl(t.Maghrib)}</td><td>${cl(t.Isha)}</td></tr>`;
+        html+=`<tr class="${isT?'today':''}"><td class="dnum">${i+1}</td><td>${cl(t.Imsak)}</td><td>${cl(t.Fajr)}</td><td>${cl(t.Sunrise)}</td><td>${cl(t.Dhuhr)}</td><td>${cl(t.Asr)}</td><td>${cl(t.Maghrib)}</td><td>${cl(t.Isha)}</td></tr>`;
       });
       document.getElementById('mtbl').innerHTML=html+'</tbody>';
     }
@@ -619,8 +636,9 @@ async function renderMonth(){
 function changeMonth(d){S.monthOffset+=d;renderMonth();}
 
 // ═══════════════════════════════════════════════════
-// QIBLA — Precise great-circle bearing
-// Kaaba: 21.422487°N, 39.826206°E
+// QIBLA — Dual arrow compass
+// Roter Pfeil = Handy-Richtung (fest nach oben)
+// Goldener Pfeil = Qibla (dreht sich mit Sensor)
 // ═══════════════════════════════════════════════════
 const KLAT=21.422487,KLNG=39.826206;
 function calcQibla(lat,lng){
@@ -634,6 +652,7 @@ function calcDist(la1,lo1,la2,lo2){
   const a=Math.sin(dA/2)**2+Math.cos(la1*DR)*Math.cos(la2*DR)*Math.sin(dO/2)**2;
   return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
 }
+
 function drawCompass(){
   const c=document.getElementById('ccanv');if(!c)return;
   const ctx=c.getContext('2d'),cx=140,cy=140,r=120;
@@ -646,38 +665,84 @@ function drawCompass(){
     ctx.lineWidth=maj?1.5:.8;ctx.stroke();
   }
 }
-let lastH=0;
-function startQibla(){
+
+let lastH=0, compassStarted=false;
+
+function initQibla(){
+  // Calculate and show Qibla info immediately
   S.qAngle=calcQibla(S.lat,S.lng);
   const dist=calcDist(S.lat,S.lng,KLAT,KLNG);
   document.getElementById('qangle').textContent=Math.round(S.qAngle)+'°';
   document.getElementById('qdist').textContent=dist.toLocaleString();
-  drawCompass();updateQArr(lastH);
-  if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
-    DeviceOrientationEvent.requestPermission().then(p=>{if(p==='granted')listenCompass();else showToast('iPhone: Einstellungen → Safari → Bewegung erlauben');}).catch(()=>showToast('Sensor Fehler'));
-  }else if(window.DeviceOrientationEvent){listenCompass();}
-  else{document.getElementById('sstatus').textContent='⚠️ Kein Kompass verfügbar';}
+  drawCompass();
+  // Show static Qibla direction immediately (without sensor)
+  updateQiblaArrows(0);
+  // Auto-start compass sensor
+  startQibla();
 }
+
+function startQibla(){
+  if(compassStarted)return;
+  if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
+    // iOS 13+ needs permission
+    DeviceOrientationEvent.requestPermission()
+      .then(p=>{
+        if(p==='granted'){listenCompass();}
+        else{document.getElementById('sstatus').textContent='⚠️ Bitte Sensorzugriff in Einstellungen erlauben';}
+      }).catch(()=>{});
+  } else if(window.DeviceOrientationEvent){
+    listenCompass();
+  } else {
+    document.getElementById('sstatus').textContent='⚠️ Kein Kompass-Sensor verfügbar';
+  }
+}
+
 function listenCompass(){
+  compassStarted=true;
   document.getElementById('sstatus').className='sstatus son';
-  document.getElementById('sstatus').textContent='✅ Kompass aktiv — Gerät drehen';
+  document.getElementById('sstatus').textContent='✅ Kompass aktiv';
+  // Try absolute orientation first (Android), fallback to regular (iOS)
   window.addEventListener('deviceorientationabsolute',handleOri,true);
   window.addEventListener('deviceorientation',handleOri,true);
 }
+
 function handleOri(e){
   let h=0;
-  if(e.webkitCompassHeading!=null)h=e.webkitCompassHeading;
-  else if(e.absolute&&e.alpha!=null)h=(360-e.alpha)%360;
-  else if(e.alpha!=null)h=(360-e.alpha)%360;
+  if(e.webkitCompassHeading!=null){
+    h=e.webkitCompassHeading; // iOS — already true north
+  } else if(e.absolute&&e.alpha!=null){
+    h=(360-e.alpha)%360; // Android absolute
+  } else if(e.alpha!=null){
+    h=(360-e.alpha)%360;
+  }
   lastH=h;
   document.getElementById('qhead').textContent=Math.round(h)+'°';
-  updateQArr(h);
+  updateQiblaArrows(h);
 }
-function updateQArr(h){
-  const a=document.getElementById('qarr');if(!a)return;
-  a.style.transform=`rotate(${S.qAngle-h}deg)`;
-  a.style.transformOrigin='140px 140px';
+
+function updateQiblaArrows(heading){
+  // Golden arrow rotates to point to Qibla based on compass heading
+  // When heading=0 (phone facing North), qibla arrow should point to qiblaAngle
+  // When heading=h, qibla arrow = qiblaAngle - heading
+  const qarr=document.getElementById('qarr');
+  if(qarr){
+    qarr.style.transform=`rotate(${S.qAngle-heading}deg)`;
+    qarr.style.transformOrigin='140px 140px';
+  }
+  // Rotate compass ring (canvas + direction labels) opposite to heading
+  // So N always points to real North on screen
+  const canv=document.getElementById('ccanv');
+  if(canv)canv.style.transform=`rotate(${-heading}deg)`;
+  // Rotate direction labels too
+  ['dN','dS','dE','dW'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.transform=`rotate(${-heading}deg) ${id==='dN'||id==='dS'?'translateX(-50%)':'translateY(-50%)'}`;
+  });
 }
+
+// Also expose for settings update
+function updateQArr(h){updateQiblaArrows(h);}
+
 
 // ═══════════════════════════════════════════════════
 // NOTIFICATIONS
@@ -698,7 +763,7 @@ function schedNotif(i){
 function toggleAllNotif(){
   const allOn=Object.values(S.notif).every(v=>v);
   reqNotif().then(g=>{
-    if(g||allOn){for(let i=0;i<6;i++){S.notif[i]=allOn?0:1;if(!allOn)schedNotif(i);}
+    if(g||allOn){for(let i=0;i<7;i++){S.notif[i]=allOn?0:1;if(!allOn)schedNotif(i);}
       document.getElementById('allNotifTog').className='tog'+(allOn?'':' on');save();renderHome();showToast(allOn?'🔕 Alle deaktiviert':'🔔 Alle aktiviert');}
     else showToast('❌ Benachrichtigungen blockiert');
   });
@@ -730,7 +795,7 @@ function showScr(name){
     document.getElementById('nav-'+s).classList.toggle('active',s===name);
   });
   if(name==='month')renderMonth();
-  if(name==='qibla'){drawCompass();S.qAngle=calcQibla(S.lat,S.lng);const d=calcDist(S.lat,S.lng,KLAT,KLNG);document.getElementById('qangle').textContent=Math.round(S.qAngle)+'°';document.getElementById('qdist').textContent=d.toLocaleString();updateQArr(lastH);}
+  if(name==='qibla'){compassStarted=false;initQibla();}
 }
 
 // ═══════════════════════════════════════════════════
